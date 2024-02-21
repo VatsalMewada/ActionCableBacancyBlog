@@ -1,14 +1,30 @@
-<p style="color: green"><%= notice %></p>
+<div> Welcome <%= current_user.email %> </div> 
+<%= button_to "Sign out", destroy_user_session_path, method: :delete %> 
 
-<h1>Messages</h1>
+<br/><br/>
 
-<div id="messages">
-  <% @messages.each do |message| %>
-    <%= render message %>
-    <p>
-      <%= link_to "Show this message", message %>
-    </p>
+<%= tag.div do %>
+  <%= tag.div id: "messages", class: "h-96 overflow-auto" do %>
+    <% Message.last(10).each do |message| %>
+      <%= tag.p do %>
+        <%= tag.p do %>
+          <%= tag.strong do %>
+            <%= message.user.email %>:
+          <% end %>
+        <% end %>
+        <%= message.content %>
+      <% end %>
+    <% end %>
   <% end %>
-</div>
 
-<%= link_to "New message", new_message_path %>
+ <%= form_with model: Message.new, id: "new_message_form", data: { remote: true } do |f| %>
+    <%= f.text_field :content, id: "message_content", placeholder: "message...",autocomplete: "off" %>
+    <%= f.hidden_field :user_id, value: current_user.id %>
+
+    <%= f.submit "send", class: "p-2 font-bold" %>
+  <% end %>
+<% end %>
+
+<script>
+  var currentUserId = <%= current_user.id %>;
+</script>
